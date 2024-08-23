@@ -125,7 +125,7 @@ class ImportantPipelineDashboard extends DataGrid
      *
      * @return array clients data
      */
-   public function getSQL($selectSQL, $joinSQL, $whereSQL, $havingSQL, $orderSQL, $limitSQL, $distinct = '')
+    public function getSQL($selectSQL, $joinSQL, $whereSQL, $havingSQL, $orderSQL, $limitSQL, $distinct = '')
     {
         $sql = sprintf(
             "SELECT SQL_CALC_FOUND_ROWS %s
@@ -145,7 +145,7 @@ class ImportantPipelineDashboard extends DataGrid
                 user.last_name as userLastName,
                 DATE_FORMAT(candidate_joborder.date_modified, '%%m-%%d-%%y ') as dateModified,
                 candidate_joborder.date_modified as dateModifiedSort,
-                IF(candidate_joborder.status = %s, 1, IF(candidate_joborder.status = %s, 2, IF(candidate_joborder.status = %s, 3, 4))) as statusSort,
+                IF(candidate_joborder.status = %s, 1, IF(candidate_joborder.status = %s, 2, 3)) as statusSort,
                 candidate_joborder_status.short_description as status
             FROM
                 candidate_joborder
@@ -165,8 +165,6 @@ class ImportantPipelineDashboard extends DataGrid
                 (   candidate_joborder.status = %s
                 OR
                     candidate_joborder.status = %s
-				OR
-                    candidate_joborder.status = %s
                 OR
                     candidate_joborder.status = %s
                 )
@@ -179,13 +177,9 @@ class ImportantPipelineDashboard extends DataGrid
             $distinct,
             PIPELINE_STATUS_SUBMITTED,
             PIPELINE_STATUS_INTERVIEWING,
-			/* PB added this to allow for 2nd interview option - note related changes in SQL above */
-			PIPELINE_STATUS_INTERVIEWING2,
             $this->_siteID,
             PIPELINE_STATUS_SUBMITTED,
             PIPELINE_STATUS_INTERVIEWING,
-			/* PB added this to allow for 2nd interview option - note related changes in SQL above */
-			PIPELINE_STATUS_INTERVIEWING2,
             PIPELINE_STATUS_OFFERED,
             JobOrderStatuses::getOpenStatusSQL(),
             (strlen($whereSQL) > 0) ? ' AND ' . $whereSQL : '',

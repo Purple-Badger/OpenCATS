@@ -124,6 +124,19 @@ define('PIPELINE_STATUS_CONTACTED',          200);
 define('PIPELINE_STATUS_QUALIFYING',         300);
 define('PIPELINE_STATUS_SUBMITTED',          400);
 define('PIPELINE_STATUS_INTERVIEWING',       500);
+
+/* below line modified by PB to add second interview option - not also required changes in Maria DB and Dashboard.php     
+ * To enable this option the following row needs to be added to Maria DB with this command (where [opencats] is your DB name):					      
+ * 	MariaDB [opencats]> INSERT INTO candidate_joborder_status 
+ *                         (candidate_joborder_status_id, short_description, can_be_scheduled, triggers_email, is_enabled) 
+ *                      VALUES (550, 'Second Interview', 0, 1, 1); 	
+ * Then the original '500, Interviewing' row needs to be modified to be 'First Interview' with this command:
+ *  MariaDB [opencats]> UPDATE candidate_joborder_status 
+ *                         SET short_description = 'First Interview'  
+ *                      WHERE candidate_joborder_status_id = 500; 
+ */ 
+define('PIPELINE_STATUS_INTERVIEWING2',       550);
+
 define('PIPELINE_STATUS_OFFERED',            600);
 define('PIPELINE_STATUS_NOTINCONSIDERATION', 650);
 define('PIPELINE_STATUS_CLIENTDECLINED',     700);

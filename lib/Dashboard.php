@@ -152,11 +152,18 @@ class Dashboard
          * from loading properly.  We don't need a limit at all, but limiting 20 results 
          * back should guarantee we will always at least get the relavant rows we want.
          */
+		 /* note this file has been modified by JY for first and second interview option 
+		 *  and also requires PIPELINE_STATUS_INTERVIEWING2 option to be defined in constants.php as id=550
+		 *  as well as an Second Interview option as 550 added to Maria DB table    */
         $sql = sprintf(
-            "SELECT
+            /* note that interviewing2 line has been added by JY for interview 2 option */
+			"SELECT
                 %s,
                 SUM(IF(candidate_joborder_status_history.status_to = %s, 1, 0)) AS submitted,
                 SUM(IF(candidate_joborder_status_history.status_to = %s, 1, 0)) AS interviewing,
+				
+				SUM(IF(candidate_joborder_status_history.status_to = %s, 1, 0)) AS interviewing2,
+				
                 SUM(IF(candidate_joborder_status_history.status_to = %s, 1, 0)) AS placed
             FROM
                 candidate_joborder_status_history
@@ -169,6 +176,9 @@ class Dashboard
             $select,
             PIPELINE_STATUS_SUBMITTED,
             PIPELINE_STATUS_INTERVIEWING,
+			/* added by JY for interview 2 option */
+			PIPELINE_STATUS_INTERVIEWING2,
+			
             PIPELINE_STATUS_PLACED,
             $this->_siteID
         );
@@ -251,6 +261,8 @@ class Dashboard
         {
             $data[$indexData]['submitted'] = 0;
             $data[$indexData]['interviewing'] = 0;
+			/* added by JY for interview 2 option */
+			$data[$indexData]['interviewing2'] = 0;
             $data[$indexData]['placed'] = 0;
             
             foreach ($rs as $indexRS => $rowRS)
@@ -259,6 +271,8 @@ class Dashboard
                 {
                     $data[$indexData]['submitted'] = $rowRS['submitted'];
                     $data[$indexData]['interviewing'] = $rowRS['interviewing'];
+					/* added by JY for interview 2 option */
+					$data[$indexData]['interviewing2'] = $rowRS['interviewing2'];
                     $data[$indexData]['placed'] = $rowRS['placed'];
                 }
             }

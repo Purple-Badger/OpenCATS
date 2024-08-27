@@ -173,6 +173,12 @@ define('FORGOT_PASSWORD_FROM_NAME', 'CATS');
 define('FORGOT_PASSWORD_SUBJECT',   'CATS - Password Retrieval Request');
 define('FORGOT_PASSWORD_BODY',      'You recently requested that your OpenCATS: Applicant Tracking System password be sent to you. Your current password is %s.');
 
+/* Password Complexity Requirements (Password Policy) */
+define('PASSWORD_MIN_LENGTH', 8);        /* minimum length of password in chars */
+define('PASSWORD_HAS_NUM', true);         /* password must include at least one numeric character */
+define('PASSWORD_HAS_SPECIALS', true);    /* password must include at least one special character */
+define('PASSWORD_HAS_UPPER_LOWER', true); /* password must include upper and lower case characters */
+
 /* Is this a demo site? */
 define('ENABLE_DEMO_MODE', false);
 

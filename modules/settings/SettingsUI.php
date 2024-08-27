@@ -1168,6 +1168,12 @@ class SettingsUI extends UserInterface
         {
             CommonErrors::fatal(COMMONERROR_NOPASSWORDMATCH, $this, 'Passwords do not match.');
         }
+		
+		/* Bail out if the password doesn't match the password rules defined in constants.php. */
+		if (!password_checkPolicy($password))		
+        {
+            CommonErrors::fatal(COMMONERROR_PASSWORDCOMPLEXITY, $this, 'Password complexity rules not met');
+        }
 
         /* If adding an e-mail username, verify it is a valid e-mail. */
         if (strpos($username, '@') !== false && filter_var($username, FILTER_VALIDATE_EMAIL) === false)
@@ -1365,6 +1371,12 @@ class SettingsUI extends UserInterface
         if ($password1 !== $password2)
         {
             CommonErrors::fatal(COMMONERROR_NOPASSWORDMATCH, $this, 'Passwords do not match.');
+        }
+		
+		/* Bail out if the password doesn't match the password rules defined in constants.php. */
+		if (!password_checkPolicy($password1))		
+        {
+            CommonErrors::fatal(COMMONERROR_PASSWORDCOMPLEXITY, $this, 'Password complexity rules not met');
         }
 
         /* Don't allow access level changes to the currently logged-in user's
@@ -2272,7 +2284,13 @@ class SettingsUI extends UserInterface
         {
             $error = 'New passwords do not match.';
         }
-
+		
+		/* Bail out if the password doesn't match the password rules defined in constants.php. */
+		if (!password_checkPolicy($newPassword))		
+        {
+            CommonErrors::fatal(COMMONERROR_PASSWORDCOMPLEXITY, $this, 'Password complexity rules not met');
+        }
+		
         /* Bail out if the password is 'cats'. */
         if ($newPassword == 'cats')
         {
@@ -2801,6 +2819,12 @@ class SettingsUI extends UserInterface
         {
             CommonErrors::fatal(COMMONERROR_NOPASSWORDMATCH, $this, 'Passwords do not match.');
         }
+		
+		/* Bail out if the password doesn't match the password rules defined in constants.php. */
+		if (!password_checkPolicy($newPassword))		
+        {
+            CommonErrors::fatal(COMMONERROR_PASSWORDCOMPLEXITY, $this, 'Password complexity rules not met');
+        }
 
         /* Attempt to change the user's password. */
         $status = $users->changePassword(
@@ -3057,6 +3081,46 @@ class SettingsUI extends UserInterface
             return;
         }
     }
+	
+	/*
+     * Called to check if a password meets the password complexity requirements set out in config.php.
+     */
+    private function password_checkPolicy($checkpassword)
+    {
+	    /* ....First construct the regex pattern from the rules handling errors */
+        $passwordPattern = '/^';
+		if (defined('PASSWORD_HAS_NUM') && PASSWORD_HAS_NUM) 
+		{
+        $passwordPattern .= '(?=.*\d)';
+		}
+		if (defined('PASSWORD_HAS_SPECIALS') && PASSWORD_HAS_SPECIALS) 
+		{
+        $passwordPattern .= '(?=.*[@$!%*?&])';
+		}
+		if (defined('PASSWORD_HAS_UPPER_LOWER') && PASSWORD_HAS_UPPER_LOWER) 
+		{
+        $passwordPattern .= '(?=.*[a-z])(?=.*[A-Z])';
+		}
+		if (defined('PASSWORD_MIN_LENGTH')) 
+		{
+        $passwordPattern .= '[A-Za-z\d@$!%*?&]{' . PASSWORD_MIN_LENGTH . ',}$/';
+		} 
+		else 
+		{
+        /* password must be at least 8 chars long by default if not defined otherwise */
+        $passwordPattern .= '[A-Za-z\d@$!%*?&]{8,}$/';
+		}
+		
+		/* The regex pattern is now constructed against the rules so use it to test the password */
+		if (!preg_match($passwordPattern, $checkpassword))		
+        {
+            return false; /* failed to meet password complexity requirements */
+        }
+		else 
+		{
+			return true; /* passed the password complexity requirements */
+		}
+	}
 
     private function wizard_deleteUser()
     {

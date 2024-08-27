@@ -42,6 +42,7 @@ define('COMMONERROR_WILDCARDSTRING',                        9);
 define('COMMONERROR_BADFIELDS',                             10);
 define('COMMONERROR_RESTRICTEDEXTENSION',                   11);
 define('COMMONERROR_FILENOTFOUND',                          12);
+define('COMMONERROR_PASSWORDCOMPLEXITY',                    14); /* PB Used if password does not meet password complexity rules defined in config.php */
 
 /**
  *	Common Errors Friendly Display Library
@@ -210,6 +211,41 @@ class CommonErrors
                 $errorMessage = 'The passwords you entered do not match. Please use the <a href="javascript:back()">'
                     . 'back button</a> on your browser to return from where you came and enter the correct password '
                     . 'in all required fields.';
+                break;
+				
+			case COMMONERROR_PASSWORDCOMPLEXITY:
+                $errorTitle = 'Passwords Rules Not Met';
+                $internalErrorTitle = 'Passwords Rules Not Met';
+                $errorMessage = 'The password you entered does not meet the minimum password complexity requirement. Passwords should ';
+					
+				if (defined('PASSWORD_HAS_NUM') && PASSWORD_HAS_NUM) 
+				{
+					$errorMessage .= 'contain a number, ';
+				}
+				if (defined('PASSWORD_HAS_SPECIALS') && PASSWORD_HAS_SPECIALS) 
+				{
+					$errorMessage .= 'include a special character, ';
+				}
+				if (defined('PASSWORD_HAS_UPPER_LOWER') && PASSWORD_HAS_UPPER_LOWER) 
+				{
+					$errorMessage .= 'have upper and lower case characters, ';
+				}
+				if ((defined('PASSWORD_HAS_NUM') && PASSWORD_HAS_NUM) || 
+				(defined('PASSWORD_HAS_SPECIALS') && PASSWORD_HAS_SPECIALS) || 
+				(defined('PASSWORD_HAS_UPPER_LOWER') && PASSWORD_HAS_UPPER_LOWER)) 
+				{
+					$errorMessage .= 'and ';
+				}
+				if (defined('PASSWORD_MIN_LENGTH')) 
+				{
+					$errorMessage .= $errorMessage = 'be at least {PASSWORD_MIN_LENGTH} characters long. ';
+				}
+				else /* if not defined then default is 8 char length passwords minimum */
+				{
+					$errorMessage .= $errorMessage = 'be at least 8 characters long. ';
+				}
+					$errorMessage .= $errorMessage =  'Please use the <a href="javascript:back()">back button</a> on your '
+						. 'browser to return from where you came and enter a password that meets these requirements.';
                 break;
 
             case COMMONERROR_FILENOTFOUND:
